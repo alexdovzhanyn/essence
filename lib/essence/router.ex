@@ -33,7 +33,7 @@ defmodule Essence.Router do
 	end
 
 	post "/convert" do
-		destination = conn.params["url"]
+		destination = conn.params["url"] |> String.strip
 
 		{_, hostname} = List.first(conn.req_headers)
 
@@ -45,6 +45,9 @@ defmodule Essence.Router do
 
 	get "/:shortened_url" do
 		%{destination_url: destination_url} = fetch_url_by_code(conn.params["shortened_url"])
+
+		destination_url = if (destination_url =~ "http"), do: destination_url, else: "http://" <> destination_url
+		IO.puts inspect(destination_url)
 
 		conn
 		|> put_resp_header("location", destination_url)
