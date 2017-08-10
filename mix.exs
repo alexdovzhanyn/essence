@@ -14,7 +14,7 @@ defmodule Essence.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :cowboy, :plug],
+      extra_applications: [:logger, :cowboy, :plug, :ecto],
       mod: {Essence.Application, []}
     ]
   end
@@ -23,7 +23,9 @@ defmodule Essence.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.0.3"},
-      {:plug, "~> 1.0"}
+      {:plug, "~> 1.0"},
+      {:ecto, "~> 2.1"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 end

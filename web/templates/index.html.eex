@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>Essence URL Shortener</title>
+	</head>
+	<body>
+		<div>
+			<form action="/convert" method="POST">
+				<input type="text" name="url" placeholder="Enter URL to shorten" />
+				<input type="submit" value="Shorten" />
+			</form>
+		</div>
+	</body>
+</html>

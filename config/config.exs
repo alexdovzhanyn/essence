@@ -8,6 +8,16 @@ use Mix.Config
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
+config :essence, ecto_repos: [Essence.Repo]
+
+config :essence, Essence.Repo,
+	adapter: Ecto.Adapters.Postgres,
+	database: "essence",
+	username: "postgres",
+	password: "postgres",
+	hostname: "localhost",
+	port: 5432
+
 # You can configure your application as:
 #
 #     config :essence, key: :value

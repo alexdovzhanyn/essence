@@ -1,0 +1,15 @@
+<html>
+	<head>
+		<title>Essence URL Shortener</title>
+	</head>
+	<body>
+		<div>
+			<div>
+				<strong>URL: <%= @destination_url %></strong>
+			</div>
+			<div>
+				<strong>SHORTENED: <a href="http://<%= @shortened_url %>"><%= @shortened_url %></a></strong>
+			</div>
+		</div>
+	</body>
+</html>

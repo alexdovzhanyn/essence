@@ -9,7 +9,8 @@ defmodule Essence.Application do
     import Supervisor.Spec
     # List all child processes to be supervised
     children = [
-      worker(Essence.Router, [])
+      worker(Essence.Router, []),
+      supervisor(Essence.Repo, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
