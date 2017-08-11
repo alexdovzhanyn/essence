@@ -1,9 +1,11 @@
 defmodule Essence.Router do
+	@moduledoc """
+ 		Our main server file. Here we configure our routes and call the main logic of our application. 
+  """
+
 	use Plug.Router
 	use Essence.View
-	import Ecto.Query
 	alias Essence.Url
-	alias Essence.Repo
   require Logger
 
   plug Plug.Logger
@@ -20,15 +22,16 @@ defmodule Essence.Router do
 		{:ok, _} = Plug.Adapters.Cowboy.http Essence.Router, [], [port: 4000]
 	end
 
-	get "/" do
+	get "/robots.txt" do
+		# We don't really want any of our pages indexed, so lets disallow all
 		conn
-		|> send_resp(200, render("index.html", nil))
+		|> send_resp(200, "Disallow *")
 		|> halt
 	end
 
-	get "/robots.txt" do
+	get "/" do
 		conn
-		|> send_resp(200, "Disallow *")
+		|> send_resp(200, render("index.html", nil))
 		|> halt
 	end
 
@@ -37,18 +40,20 @@ defmodule Essence.Router do
 
 		{_, hostname} = List.first(conn.req_headers)
 
-		%{destination_url: destination_url, shortened_url: shortened_url} =  find_or_create_url(destination)
+		%{destination_url: destination_url, shortened_url: shortened_url} =  Url.find_or_create(destination)
 
-		send_resp(conn, 200, render("converted.html", %{destination_url: destination, shortened_url: "#{hostname}/#{shortened_url}"}))
+		conn
+		|> send_resp(200, "{\"shortened_url\": \"#{hostname}/#{shortened_url}\"}")
 		|> halt
 	end
 
 	get "/:shortened_url" do
-		%{destination_url: destination_url} = fetch_url_by_code(conn.params["shortened_url"])
+		%{destination_url: destination_url} = Url.fetch_by_code(conn.params["shortened_url"])
 
+		# Ensure that the destination URL is at least prepended with http, or else the 301 redirect would send us to an undefined path on our site
 		destination_url = if (destination_url =~ "http"), do: destination_url, else: "http://" <> destination_url
-		IO.puts inspect(destination_url)
 
+		# Plug doesn't seem to have native redirect logic, so we have to use manual http redirects using the "location" HTTP header
 		conn
 		|> put_resp_header("location", destination_url)
 		|> send_resp(301, "Redirecting...")
@@ -59,37 +64,5 @@ defmodule Essence.Router do
 		conn
 		|> send_resp(404, "Not found")
 		|> halt
-	end
-
-	defp find_or_create_url(destination) do
-		# Don't create another record for this destination if we've already created one
-		if !fetch_url_by_destination(destination) do
-			shortened = :crypto.strong_rand_bytes(8) |> Base.url_encode64 |> binary_part(0, 8)
-
-			# Generate and verify our url record
-			url = %Url{}
-			changeset = Url.changeset(url, %{destination_url: destination, shortened_url: shortened})
-
-			Repo.insert(changeset)
-		end
-
-		fetch_url_by_destination(destination)
-	end
-
-	# This returns the url from our database if the destination has been defined before
-	defp fetch_url_by_destination(url) do
-		query = from u in "urls", 
-						where: u.destination_url == ^url,
-						select: %{id: u.id, destination_url: u.destination_url, shortened_url: u.shortened_url}
-
-  	Repo.one(query)
-	end
-
-	defp fetch_url_by_code(shortened_url) do
-		query = from u in "urls", 
-						where: u.shortened_url == ^shortened_url,
-						select: %{id: u.id, destination_url: u.destination_url, shortened_url: u.shortened_url}
-
-		Repo.one(query)
 	end
 end
