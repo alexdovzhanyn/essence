@@ -1,21 +1,8 @@
 # Essence
 
-Elixir URL shortener
+A simple URL shortener built with Elixir
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `essence` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:essence, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/essence](https://hexdocs.pm/essence).
-
+First, make sure you've got Elixir installed on your system. Download this repo, then run ```mix deps.get``` to download all dependencies needed to build 
+this project. Then visit `localhost:4000`, and you're good to go.
